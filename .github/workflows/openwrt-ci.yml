@@ -58,7 +58,6 @@ jobs:
 
           cat >> .config <<EOF
           CONFIG_TARGET_ipq806x=y
-          CONFIG_TARGET_ipq806x=y
           CONFIG_TARGET_ipq806x_generic=y
           CONFIG_TARGET_ipq806x_generic_DEVICE_linksys_ea8500=y
           CONFIG_ARIA2_BITTORRENT=y
@@ -77,7 +76,9 @@ jobs:
           CONFIG_PACKAGE_kmod-inet-diag=y
           CONFIG_PACKAGE_kmod-iptunnel=y
           CONFIG_PACKAGE_kmod-iptunnel4=y
+          CONFIG_PACKAGE_kmod-lib-crc32c=y
           # CONFIG_PACKAGE_kmod-nf-conntrack-netlink is not set
+          CONFIG_PACKAGE_kmod-nft-core=y
           CONFIG_PACKAGE_kmod-sit=y
           CONFIG_PACKAGE_libcap=y
           CONFIG_PACKAGE_libcap-bin=y
@@ -86,6 +87,7 @@ jobs:
           CONFIG_PACKAGE_libgmp=y
           CONFIG_PACKAGE_libminiupnpc=y
           CONFIG_PACKAGE_libnatpmp=y
+          CONFIG_PACKAGE_libnftnl=y
           CONFIG_PACKAGE_libreadline=y
           CONFIG_PACKAGE_libruby=y
           CONFIG_PACKAGE_libstdcpp=y
@@ -110,6 +112,7 @@ jobs:
           CONFIG_PACKAGE_luci-i18n-zerotier-zh-cn=y
           # CONFIG_PACKAGE_luci-lib-fs is not set
           CONFIG_PACKAGE_lucky=y
+          CONFIG_PACKAGE_nftables-nojson=y
           # CONFIG_PACKAGE_nlbwmon is not set
           CONFIG_PACKAGE_ruby=y
           CONFIG_PACKAGE_ruby-bigdecimal=y
