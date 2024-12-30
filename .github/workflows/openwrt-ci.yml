@@ -95,8 +95,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: OpenWrt_firmware
-          path: ./artifact/firmware/
-
+          path: |
+            ./artifact/firmware/
+            ./artifact/package/
       - name: Upload release asset
         if: github.event_name == 'workflow_dispatch'
         uses: svenstaro/upload-release-action@v2
