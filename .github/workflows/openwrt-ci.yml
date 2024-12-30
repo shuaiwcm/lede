@@ -69,12 +69,12 @@ jobs:
           # CONFIG_PACKAGE_firewall is not set
           CONFIG_PACKAGE_firewall4=y
           CONFIG_PACKAGE_frpc=y
-          CONFIG_PACKAGE_fuse-utils=m
+          CONFIG_PACKAGE_fuse-utils=y
           # CONFIG_PACKAGE_iptables-mod-conntrack-extra is not set
           # CONFIG_PACKAGE_iptables-mod-fullconenat is not set
           CONFIG_PACKAGE_ipv6helper=y
           CONFIG_PACKAGE_jansson=y
-          CONFIG_PACKAGE_kmod-fuse=m
+          CONFIG_PACKAGE_kmod-fuse=y
           CONFIG_PACKAGE_kmod-inet-diag=y
           # CONFIG_PACKAGE_kmod-ipt-conntrack-extra is not set
           # CONFIG_PACKAGE_kmod-ipt-fullconenat is not set
