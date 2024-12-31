@@ -1,0 +1,129 @@
+name: OpenWrt-CI
+
+# 触发方式：支持手动触发并要求用户输入版本号，默认为 "v1.0.0"
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag for the firmware"
+        required: true
+        default: "v1.0.0"
+
+# 设置权限：仅允许读取内容
+permissions:
+  contents: read
+
+jobs:
+  build_openwrt:
+    name: Build OpenWrt Firmware # 定义任务名称
+    runs-on: ubuntu-latest       # 运行环境，使用最新的 Ubuntu 系统
+
+    steps:
+      - name: Space cleanup and Initialization environment
+        env:
+          DEBIAN_FRONTEND: noninteractive # 避免交互式安装
+        run: |
+          # 清理环境以释放磁盘空间和提高构建效率
+          sudo -E rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d /usr/local/lib/android
+          sudo -E apt-mark hold grub-efi-amd64-signed
+          sudo -E apt update
+          sudo -E apt -y purge azure-cli* docker* ghc* zulu* llvm* firefox google* dotnet* powershell* openjdk* mysql* php* mongodb* dotnet* snap*
+          sudo -E apt -y full-upgrade
+          # 安装所需的软件包
+          sudo -E apt -y install ack antlr3 aria2 asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext gcc-multilib g++-multilib git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libreadline-dev libssl-dev libtool lrzsz mkisofs msmtp nano ninja-build p7zip p7zip-full patch pkgconf python3 python3-pip libpython3-dev qemu-utils rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
+          # 清理不必要的文件和包
+          sudo -E systemctl daemon-reload
+          sudo -E apt -y autoremove --purge
+          sudo -E apt clean
+          # 设置时区为上海
+          sudo -E timedatectl set-timezone "Asia/Shanghai"
+
+      - name: Checkout OpenWrt
+        uses: actions/checkout@v4 # 从 Git 仓库拉取代码
+
+      - name: Update feeds
+        run: |
+          # 添加额外的软件源 OpenClash
+          echo 'src-git OpenClash https://github.com/vernesong/OpenClash.git;master' >>feeds.conf.default
+          # 更新并安装所有的源
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+
+      - name: Generate configuration file
+        run: |
+          # 删除之前的配置文件
+          rm -f ./.config*
+          touch ./.config
+
+          # 添加 OpenWrt 配置
+          cat >> .config <<EOF
+          CONFIG_TARGET_ipq806x=y
+          CONFIG_TARGET_ipq806x_generic=y
+          CONFIG_TARGET_ipq806x_generic_DEVICE_linksys_ea8500=y
+          # ... (省略部分具体配置内容)
+          EOF
+
+          # 去掉配置文件中的缩进以满足编译要求
+          sed -i 's/^[ \t]*//g' ./.config
+          # 生成默认配置
+          make defconfig
+          # 添加网络配置到默认设置文件
+          sed -i "2i # network config" ./package/lean/default-settings/files/zzz-default-settings
+          sed -i "3i uci set network.lan.ipaddr='192.168.50.1'" ./package/lean/default-settings/files/zzz-default-settings # 设置 LAN IP 地址
+          sed -i "4i uci set network.lan.proto='static'" ./package/lean/default-settings/files/zzz-default-settings # 设置 LAN 使用静态 IP
+
+      - name: Download packages
+        run: make download -j16 # 并行下载所需的编译包，加速构建过程
+
+      - name: Compile firmware
+        run: |
+          # 使用多核编译以加快构建速度，如果失败则显示详细错误日志
+          make -j$(nproc) || make -j1 V=s
+
+      - name: Prepare artifact
+        run: |
+          # 创建保存固件、包和编译信息的目录
+          mkdir -p ./artifact/firmware
+          mkdir -p ./artifact/package
+          mkdir -p ./artifact/buildinfo
+          # 删除无用的 package 文件夹
+          rm -rf $(find ./bin/targets/ -type d -name "packages")
+          # 将固件、安装包和构建信息拷贝到相应目录
+          cp -rf $(find ./bin/targets/ -type f -name "*.bin") ./artifact/firmware/
+          cp -rf $(find ./bin/packages/ -type f -name "*.ipk") ./artifact/package/
+          cp -rf $(find ./bin/targets/ -type f -name "*.buildinfo" -o -name "*.manifest") ./artifact/buildinfo/
+
+      - name: Upload buildinfo
+        uses: actions/upload-artifact@v4 # 上传构建信息到 GitHub
+        with:
+          name: OpenWrt_buildinfo
+          path: ./artifact/buildinfo/
+
+      - name: Upload firmware
+        uses: actions/upload-artifact@v4 # 上传固件到 GitHub
+        with:
+          name: OpenWrt_firmware
+          path: ./artifact/firmware/
+      
+      - name: Upload package
+        uses: actions/upload-artifact@v4 # 上传安装包到 GitHub
+        with:
+          name: OpenWrt_package
+          path: ./artifact/package/
+          
+      - name: Set Release Date
+        id: release_date
+        run: |
+          # 获取当前时间并格式化为 年.月.日-时分
+          release_date=$(date +'%Y.%m.%d-%H:%M')
+          echo "::set-output name=date::$release_date"
+
+      - name: Upload release asset
+        if: github.event_name == 'workflow_dispatch' # 确保只有在手动触发时上传 Release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.YOURTOKEN }} # 使用 GitHub Token 进行授权
+          file: ./artifact/firmware/*.bin # 指定要上传的固件文件
+          tag: ${{ github.event.inputs.tag }} # 使用用户输入的版本号作为 Tag
+          release_name: "OpenWrt Release on ${{ steps.release_date.outputs.date }}" # 使用格式化的时间作为 Release 名称
+          file_glob: true # 支持通配符
