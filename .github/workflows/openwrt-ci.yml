@@ -189,7 +189,7 @@ jobs:
         if: github.event_name == 'workflow_dispatch'
         run: |
           # 获取当前的日期并格式化为 "年.月.日-时分" 格式
-          release_name="OpenWrt Firmware Build for ${{ github.event.inputs.tag }} - $(date +'%Y.%m.%d-%H%M')"
+          release_name="Linksys EA8500 for ${{ github.event.inputs.tag }} - $(date +'%Y.%m.%d-%H%M')"
           # 将生成的 release_name 保存到 GitHub 环境变量中，供后续步骤使用
           echo "release_name=$release_name" >> $GITHUB_ENV
       
