@@ -184,6 +184,14 @@ jobs:
         with:
           name: OpenWrt_package
           path: ./artifact/package/
+
+      - name: Set Release Date
+        id: release_date
+        run: |
+          # 获取当前日期和时间并格式化为 YYYY.MM.DD-HH:MM
+          release_date=$(date +'%Y.%m.%d-%H:%M')
+          echo "Release Date: $release_date"
+          echo "::set-output name=date::$release_date"
           
       - name: Upload release asset
         if: github.event_name == 'workflow_dispatch'
@@ -192,5 +200,5 @@ jobs:
           repo_token: ${{ secrets.YOURTOKEN }}
           file: ./artifact/firmware/*.bin
           tag: ${{ github.event.inputs.tag }}
-          release_name: "Linksys EA8500 for ${{ github.event.inputs.tag }}"
+          release_name: "Linksys EA8500 on ${{ steps.release_date.outputs.date }}"
           file_glob: true
