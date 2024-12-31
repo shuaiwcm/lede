@@ -192,4 +192,5 @@ jobs:
           repo_token: ${{ secrets.YOURTOKEN }}
           file: ./artifact/firmware/*.bin
           tag: ${{ github.event.inputs.tag }}
+          release_name: "Linksys EA8500 for ${{ github.event.inputs.tag }}"
           file_glob: true
