@@ -78,6 +78,7 @@ jobs:
           CONFIG_PACKAGE_libruby=y
           CONFIG_PACKAGE_libstdcpp=y
           CONFIG_PACKAGE_libyaml=y
+          # CONFIG_PACKAGE_luci-app-accesscontrol is not set
           # CONFIG_PACKAGE_luci-app-arpbind is not set
           # CONFIG_PACKAGE_luci-app-autoreboot is not set
           # CONFIG_PACKAGE_luci-app-ddns is not set
@@ -86,12 +87,14 @@ jobs:
           CONFIG_PACKAGE_luci-app-lucky=y
           # CONFIG_PACKAGE_luci-app-nlbwmon is not set
           CONFIG_PACKAGE_luci-app-openclash=y
+          CONFIG_PACKAGE_luci-app-timecontrol=y
           # CONFIG_PACKAGE_luci-app-upnp is not set
           # CONFIG_PACKAGE_luci-app-vlmcsd is not set
           # CONFIG_PACKAGE_luci-app-vsftpd is not set
           CONFIG_PACKAGE_luci-app-zerotier=y
           CONFIG_PACKAGE_luci-i18n-frpc-zh-cn=y
           CONFIG_PACKAGE_luci-i18n-lucky-zh-cn=y
+          CONFIG_PACKAGE_luci-i18n-timecontrol-zh-cn=y
           CONFIG_PACKAGE_luci-i18n-zerotier-zh-cn=y
           # CONFIG_PACKAGE_luci-lib-fs is not set
           CONFIG_PACKAGE_lucky=y
