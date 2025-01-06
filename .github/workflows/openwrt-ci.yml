@@ -83,7 +83,6 @@ jobs:
           # CONFIG_PACKAGE_luci-app-autoreboot is not set
           # CONFIG_PACKAGE_luci-app-ddns is not set
           # CONFIG_PACKAGE_luci-app-filetransfer is not set
-          CONFIG_PACKAGE_luci-app-frpc=y
           CONFIG_PACKAGE_luci-app-lucky=y
           # CONFIG_PACKAGE_luci-app-nlbwmon is not set
           CONFIG_PACKAGE_luci-app-openclash=y
@@ -92,7 +91,6 @@ jobs:
           # CONFIG_PACKAGE_luci-app-vlmcsd is not set
           # CONFIG_PACKAGE_luci-app-vsftpd is not set
           CONFIG_PACKAGE_luci-app-zerotier=y
-          CONFIG_PACKAGE_luci-i18n-frpc-zh-cn=y
           CONFIG_PACKAGE_luci-i18n-lucky-zh-cn=y
           CONFIG_PACKAGE_luci-i18n-timecontrol-zh-cn=y
           CONFIG_PACKAGE_luci-i18n-zerotier-zh-cn=y
@@ -115,7 +113,6 @@ jobs:
           # CONFIG_PACKAGE_vlmcsd is not set
           # CONFIG_PACKAGE_vsftpd-alt is not set
           CONFIG_PACKAGE_zerotier=y
-
           EOF
 
           sed -i 's/^[ \t]*//g' ./.config
